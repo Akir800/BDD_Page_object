@@ -103,4 +103,24 @@ class MoneyTransferTest {
     //Проверка списания с карты 0002:
     assertEquals(-transferInfo.getAmount(), initialBalanceSecondCard - finalBalanceSecondCard);
   }
+  @Test
+  public void shouldTransferFromFirstToSecondWithBalanceAboveIt() {
+    //Получение баланса по обеим картам и подготовка данных для перевода денег:
+    var dashboardPage = new DashboardPage();
+    var firstCardId = DataHelper.getFirstCardId();
+    var initialBalanceFirstCard = dashboardPage.getCardBalance(firstCardId);
+    var secondCardId = DataHelper.getSecondCardId();
+    var initialBalanceSecondCard = dashboardPage.getCardBalance(secondCardId);
+    var replenishmentPage = dashboardPage.transfer(secondCardId);
+    var transferInfo = DataHelper.getSecondCardTransferInfoNegative();
+    replenishmentPage.transferBetweenOwnCards(transferInfo);
+    var finalBalanceFirstCard = dashboardPage.getCardBalance(firstCardId);
+    var finalBalanceSecondCard = dashboardPage.getCardBalance(secondCardId);
+    //Проверка на изменение баланса первой карты:
+    assertEquals(initialBalanceFirstCard, finalBalanceFirstCard,
+            "Изменился баланс первой карты");
+    //Проверка на изменение баланса второй карты:
+    assertEquals(initialBalanceSecondCard, finalBalanceSecondCard,
+            "Изменился баланс второй карты");
+  }
 }
